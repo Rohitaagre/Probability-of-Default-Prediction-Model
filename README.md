@@ -27,16 +27,9 @@ This project builds a **Probability of Default (PD) model** — a core credit ri
 1. **Data preparation** — Loaded and cleaned the raw CSV, handled mixed-type columns, one-hot encoded the categorical `home_ownership_n` feature.
 2. **Train-test split** — 70/30 split, stratified on the target to preserve the default rate in both sets.
 3. **Model pipeline** — `StandardScaler` + `LogisticRegression` (scikit-learn `Pipeline`), keeping preprocessing and modeling leakage-free and reproducible.
-4. **Class imbalance handling** — With a ~20% default rate, the default 0.5 classification threshold caused the model to under-predict defaults (near-zero recall). This was corrected using `class_weight="balanced"` in `LogisticRegression`, which reweights the loss function to account for the imbalance.
-5. **Evaluation** — Assessed using AUC-ROC, ROC curve, and classification report — the standard metrics for credit risk models, since raw accuracy is misleading on imbalanced classes.
+4. **Evaluation** — Assessed using AUC-ROC, ROC curve, and classification report — the standard metrics for credit risk models, since raw accuracy is misleading on imbalanced classes.
 
 ## Results
-
-| Metric | Before (`class_weight` unset) | After (`class_weight="balanced"`) |
-|---|---|---|
-| AUC-ROC | 0.65 | 0.65 |
-| Recall (Default class) | ~0.00 | 0.64 |
-| Precision (Default class) | 0.38 | 0.27 |
 
 The AUC-ROC (0.65) reflects the model's underlying ability to rank riskier borrowers above safer ones, and is unchanged by the class-weight adjustment. What changes is the *decision threshold behavior*: with balanced class weights, the model correctly flags a much larger share of actual defaults, at the cost of more false positives — a standard precision-recall trade-off in credit risk scoring.
 
